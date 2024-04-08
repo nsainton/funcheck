@@ -39,6 +39,8 @@ NC='\033[0m'
 HOST_URL="https://github.com/tmatis/funcheck/releases/latest/download/funcheck"
 LIBRARY_URL="https://github.com/tmatis/funcheck/releases/latest/download/libfuncheck.so"
 
+LOCAL_PATH="$HOME/.local/funcheck/host"
+
 SHELL=$(basename $SHELL)
 
 function check_return_code {
@@ -138,26 +140,28 @@ mv /tmp/$USER/funcheck/library/libfuncheck.so $HOME/.local/funcheck/library/libf
 
 # add the host and library to PATH depending on the shell
 
-if [ -n "$(echo $PATH | grep $HOME/.local/funcheck/host)" ]; then
-    echo "funcheck path is already installed in $HOME/.local/funcheck/host"
+if [ -n "$(echo $PATH | grep $LOCALPATH)" ]; then
+    echo "funcheck path is already installed in $LOCALPATH"
     echo "You can now use funcheck in $SHELL"
     exit 0
 fi
 
-if [ "$SHELL" = "bash" ]; then
-    echo "export PATH=$HOME/.local/funcheck/host:\$PATH" >> $HOME/.bashrc
-elif [ "$SHELL" = "zsh" ]; then
-    echo "export PATH=$HOME/.local/funcheck/host:\$PATH" >> $HOME/.zshrc
-elif [ "$SHELL" = "fish" ]; then
-    echo "set -gx PATH $HOME/.local/funcheck/host \$PATH" >> $HOME/.config/fish/config.fish
-elif [ "$SHELL" = "sh" ]; then
-    echo "export PATH=$HOME/.local/funcheck/host:\$PATH" >> $HOME/.profile
-else
-    echo "Your shell is not supported. Please add $HOME/.local/funcheck/host to your PATH"
-    exit 1
-fi
 
-echo "funcheck is installed in $HOME/.local/funcheck/host"
+case "$SHELL" in
+	"bash" )
+    	echo "export PATH=$LOCALPATH:\$PATH" >> $HOME/.bashrc ;;
+	"zsh" )
+    	echo "export PATH=$LOCALPATH:\$PATH" >> $HOME/.zshrc ;;
+	"fish" )
+	    echo "set -gx PATH $LOCALPATH \$PATH" >> $HOME/.config/fish/config.fish ;;
+	"sh" )
+	    echo "export PATH=$LOCALPATH:\$PATH" >> $HOME/.profile ;;
+	"*" )
+    	echo "Your shell is not supported. Please add $LOCALPATH to your PATH"
+		exit 1 ;;
+esac
+		
+echo "funcheck is installed in $LOCALPATH"
 echo "You can now use funcheck in $SHELL"
 
 $SHELL
